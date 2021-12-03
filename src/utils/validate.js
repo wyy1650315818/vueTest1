@@ -25,7 +25,7 @@ export function validatePassword(value){
  */
  export function validateCodes(value){
     let reg = /^[A-Za-z0-9]{6}$/;
-    console.log('validateCodes:'+value)
-    console.log(reg.test(value))
+    // console.log('validateCodes:'+value)
+    // console.log(reg.test(value))
     return reg.test(value) ? false:true;
 }

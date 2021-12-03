@@ -5,7 +5,7 @@
   <li  v-for="item in menuTab" :key="item.id" :class="{'current': item.current}" @click="toggleMenu(item)"> {{item.txt}}
   </li>
 </ul>
-<el-form :model="ruleForm" status-icon :rules="rules" ref="loginForm"  class="login-form" size="meduim">
+<el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm"  class="login-form" size="meduim">
   
   <el-form-item  prop="username" class="item-form">
     <label>用户名</label>
@@ -32,7 +32,7 @@
     
   </el-form-item>
   <el-form-item>
-    <el-button type="danger" @click="submitForm('loginForm')" class=" login-btn block">提交</el-button>
+    <el-button type="danger" @click="submitForm('ruleForm')" class=" login-btn block">提交</el-button>
 
   </el-form-item>
 </el-form>
@@ -41,61 +41,20 @@
 </div>
 </template>
 <script>
-// import {reactive,ref} from '@vue/composition-api';
-import {reactive,ref,isRef, toRefs, onMounted,unref} from 'vue';
 import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
-// import { isRef, toRef } from '@vue/reactivity';
  export default{
      name : 'login',
-     
-     setup(props,{refs}){
-      
-      /**
-      * 声明数据
-      */
-     //这里放置data数据，生命周期，自定义的函数
-       const menuTab = reactive([
-        { txt :'登陆',current :true,type:'logon'},
-        { txt :'注册',current :false,type:'register'}
-       ])
-       //模块值
-       const model = ref('login')
-       console.log('model:'+model.value)
-       //判断是否为基础数据类型ref
-       console.log(isRef(model)?'是基础数据类型':'是对象类型')
-
-       const aa = reactive({
-       x:0,
-       y:1
-       } )
-       console.log('aa.x:'+aa.x)
-       const bb = toRefs(aa);
-       console.log('bb.x:'+bb.x);
-       console.log('bb.x:'+bb.x.value);
-       //表单绑定数据
-        const ruleForm = reactive({
-          username: '',
-          password: '',
-          password2: '',
-          code: ''
-        }) 
-        const loginForm = ref(null)
-        // const loginForm = reactive({
-        //   username: '',
-        //   password: '',
-        //   password2: '',
-        //   code: ''
-        // }) 
-         //验证用户名
+     data(){
+      //验证用户名
       var validateUsername = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入用户名'));
         } else {
           callback();
         }
-      }
+      };
       //验证密码
-      let validatePass = (rule, value, callback) => {
+      var validatePass = (rule, value, callback) => {
         let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,20}$/;
 
         if (value === '') {
@@ -108,40 +67,52 @@ import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
         else {
           callback();
         }
-      }
+      };
       //验证重复密码
-      let validatePass2 = (rule, value, callback) => {
+      var validatePass2 = (rule, value, callback) => {
         let reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,20}$/;
 
         if (value === '') {
           callback(new Error('请再次输入密码'));
         } 
-        if(value!=ruleForm.password){
+        if(value!=this.ruleForm.password){
 
           callback(new Error('两次密码不一致!'));
         }
         else {
           callback();
         }
-      }
+      };
       //验证验证码
-       let validateCode = (rule, value, callback) => {
-         ruleForm.code = stripscript(value)
-         value = ruleForm.code
+       var validateCode = (rule, value, callback) => {
+         this.ruleForm.code = stripscript(value)
+         value = this.ruleForm.code
         //  console.log(stripscript(value))
-      // console.log(validateCodes(value))
+      console.log(validateCodes(value))
         if (value === '') {
           callback(new Error('请输入验证码'));
         } if(validateCodes(value)){
-          // console.log(value)
+          console.log(value)
           callback(new Error('验证码格式不正确！'));
         }
         else {
           callback();
         }
       };
-      //表单的验证
-          const rules = reactive({
+       return{
+         
+       menuTab:[
+        { txt :'登陆',current :true,type:'logon'},
+        { txt :'注册',current :false,type:'register'}
+       ],
+       model:'login',
+       ruleForm: {
+          username: '',
+          password: '',
+          password2: '',
+          code: ''
+        },
+        rules: {
           username: [
             { validator: validateUsername, trigger: 'blur' }
           ],
@@ -154,55 +125,32 @@ import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
           code: [
             { validator: validateCode, trigger: 'blur' }
           ]
-        }) 
-      /**
-       * 声明函数
-       */
-      const toggleMenu = (data => {
+        }
+       }
+     },
+     created(){},
+     mounted(){
+
+     },
+     methods:{
+       toggleMenu(data){
          console.log(data.type)
-         model.value = data.type;
-         menuTab.forEach((elem,index) => {
+         this.model = data.type;
+         this.menuTab.forEach((elem,index) => {
            elem.current = false
          });
          data.current = true;
-       })
-       /**
-       * 提交表单
-       */
-      const submitForm = (formName => {
-        console.log('loginForm:'+JSON.stringify(loginForm,['_rawValue']))
-        const c =  JSON.parse(JSON.stringify(loginForm))
-      console.log('C:'+c.toString())
-        // console.log('loginForm:'+JSON.stringify(loginForm)[2])
-        // console.log('loginForm:'+JSON.stringify(loginForm)._rawValue)
-        // console.log('loginForm:'+JSON.stringify(loginForm)[2].value)
-        const form = unref(loginForm)
-      form.validate((valid) => {
-           if (valid) {
-             console.log(form.validate)
-             console.log(form.model)
+       },
+       submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
             alert('submit!');
           } else {
             console.log('error submit!!');
             return false;
           }
-        })
-      }) 
-       /**
-        * 生命周期
-        */
-       //挂载完成后
-       onMounted(() => {})
-       return{
-          menuTab,
-          model,
-          ruleForm,
-          rules,
-          loginForm,
-          toggleMenu,
-          submitForm
-          
-       }
+        });
+      }
      }
  }
 </script>

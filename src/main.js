@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-
+// import VueCompositionApi from '@vue/composition-api';
 import router from "./router";
 import store from "./store";
 // import ElementUI from 'element-ui';
@@ -9,6 +9,7 @@ import ElementPlus from 'element-plus';
 import App from "./App.vue";
 // Vue.use(ElementUI);
 const app = createApp(App)
+// app.use(VueCompositionApi)
 app.use(ElementPlus)
 app.use(store).use(router).mount("#app");
 // Vue.config.productionTip = false;
