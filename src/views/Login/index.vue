@@ -42,6 +42,8 @@
 </template>
 <script>
 // import {reactive,ref} from '@vue/composition-api';
+import {GetSms} from "@/api/login.js"
+import {axios} from 'axios';
 import {reactive,ref,isRef, toRefs, onMounted,unref} from 'vue';
 import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
 // import { isRef, toRef } from '@vue/reactivity';
@@ -170,6 +172,20 @@ import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
        * 提交表单
        */
       const submitForm = (formName => {
+        alert(123)
+        // 为给定 ID 的 user 创建请求
+        axios.request({
+          url: '/user',
+  // `method` 是创建请求时使用的方法
+  method: 'get', // default
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+
         console.log('loginForm:'+JSON.stringify(loginForm,['_rawValue']))
         const c =  JSON.parse(JSON.stringify(loginForm))
       console.log('C:'+c.toString())
@@ -192,7 +208,9 @@ import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
         * 生命周期
         */
        //挂载完成后
-       onMounted(() => {})
+       onMounted(() => {
+         GetSms()
+       })
        return{
           menuTab,
           model,
@@ -200,7 +218,8 @@ import {stripscript,validatePassword,validateCodes} from '@/utils/validate.js';
           rules,
           loginForm,
           toggleMenu,
-          submitForm
+          submitForm,
+          // post
           
        }
      }
